@@ -10,7 +10,7 @@ module.exports = {
 		'^.+\\.(t|j)sx?$': 'ts-jest',
 	},
 	roots: [
-		'<rootDir>/test',
+		'<rootDir>/src/test',
 	],
 	testMatch: [
 		'**/controllers/**/*.test.ts',
