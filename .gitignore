@@ -26,7 +26,7 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-# Dependency directories
+# Dependency directorie
 node_modules
 jspm_packages
 
