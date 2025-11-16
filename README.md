@@ -7,6 +7,7 @@ Microservico de gerenciamento de clientes desenvolvido para a plataforma conecta
 - **Runtime**: Node.js
 - **Framework**: Fastify
 - **Linguagem**: TypeScript
+- **Mensageria**: Kafka (KafkaJS)
 - **ORM**: Prisma
 - **Banco de Dados**: PostgreSQL
 - **Autenticacao**: JWT (JSON Web Tokens)
@@ -112,6 +113,9 @@ Resposta de erro:
 ```
 
 4. **Inicie o banco de dados com Docker**:
+
+Docker composer ja esta configurado.
+
 ```bash
 docker-compose up -d
 ```
