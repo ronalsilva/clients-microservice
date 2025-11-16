@@ -83,3 +83,23 @@ export async function deleteUser(response: FastifyReply, email: string): Promise
         throw new Error("Erro ao deletar usuário");
     }
 }
+
+export async function getUserById(userId: string): Promise<CreateUserResult | null> {
+    try {
+        const result = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+                profile_picture: true,
+                created_at: true
+            }
+        });
+        return result as CreateUserResult | null;
+    } catch (err: any) {
+        console.error('Error getting user by ID:', err);
+        throw new Error("Erro ao buscar usuário por ID");
+    }
+}
