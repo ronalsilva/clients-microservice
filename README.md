@@ -51,8 +51,64 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes variaveis:
 
 ```env
 DATABASE_URL="postgresql://postgres:admin@localhost:5431/clients-db-ilia"
-JWT_SECRET="ILIACHALLENGE"
-PORT=3002
+JWT_SECRET = "ILIACHALLENGE_INTERNAL "
+PORT= 3002
+KAFKA_BROKERS=localhost:9092
+KAFKA_REQUEST_TOPIC=client-microservice-requests
+KAFKA_RESPONSE_TOPIC=client-microservice-responses
+```
+
+## Integração com Kafka
+
+O client-microservice se comunica com outros servicos via Kafka usando os topicos:
+
+- Consumo: `client-microservice-requests`
+- Publicacao: `client-microservice-responses`
+
+### Acoes suportadas
+- `validateTokenAndGetUser`: valida o token JWT e retorna os dados do usuario do token.
+- `getUserById`: busca o usuario pelo `userId` informado (token opcional).
+
+### Formato das mensagens
+
+Requisicao (validateTokenAndGetUser):
+```json
+{
+  "correlationId": "uuid-da-requisicao",
+  "action": "validateTokenAndGetUser",
+  "token": "jwt-token"
+}
+```
+
+Requisicao (getUserById):
+```json
+{
+  "correlationId": "uuid-da-requisicao",
+  "action": "getUserById",
+  "userId": "user-id",
+  "token": "jwt-token (opcional)"
+}
+```
+
+Resposta de sucesso:
+```json
+{
+  "correlationId": "uuid-da-requisicao",
+  "user": {
+    "id": "user-id",
+    "email": "user@example.com",
+    "name": "User Name"
+  }
+}
+```
+
+Resposta de erro:
+```json
+{
+  "correlationId": "uuid-da-requisicao",
+  "error": "Invalid token",
+  "message": "Token expired or invalid"
+}
 ```
 
 4. **Inicie o banco de dados com Docker**:
@@ -115,6 +171,8 @@ clients-microservice/
 ├── src/
 │   ├── api/              # Definicao das rotas
 │   ├── controllers/      # Logica de controle
+│   ├── middleware/       
+│   │   └── Kafka         # Configuracao do Kafka
 │   ├── schemas/          # Schemas de validacao
 │   ├── service/          # Logica de negocio
 │   ├── utils/            # Utilitarios
