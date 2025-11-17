@@ -4,7 +4,6 @@ import { hashPassword } from '@utils/hash';
 import { FastifyReply } from 'fastify';
 import { User } from '@prisma/client';
 
-// Mock dos módulos
 jest.mock('@utils/dbConnection', () => {
   const mockUser = {
     create: jest.fn(),
@@ -23,10 +22,8 @@ jest.mock('@utils/dbConnection', () => {
 jest.mock('@utils/handleError');
 jest.mock('@utils/hash');
 
-// Importar prisma após o mock
 import prisma from '@utils/dbConnection';
 
-// Mock dos módulos
 const mockHandleError = handleError as jest.MockedFunction<typeof handleError>;
 const mockHashPassword = hashPassword as jest.MockedFunction<typeof hashPassword>;
 
@@ -34,16 +31,13 @@ describe('Users Service', () => {
   let mockReply: Partial<FastifyReply>;
 
   beforeEach(() => {
-    // Reset dos mocks antes de cada teste
     jest.clearAllMocks();
 
-    // Mock do response (FastifyReply)
     mockReply = {
       code: jest.fn().mockReturnThis(),
       send: jest.fn().mockReturnThis(),
     };
 
-    // Mock padrão do hashPassword
     mockHashPassword.mockReturnValue({
       hash: 'hashed-password',
       salt: 'salt-value',
@@ -52,7 +46,6 @@ describe('Users Service', () => {
 
   describe('createUser', () => {
     it('deve criar um usuário com sucesso', async () => {
-      // Arrange
       const mockUser: Partial<User> = {
         id: 'user-id-123',
         first_name: 'John',
@@ -74,10 +67,8 @@ describe('Users Service', () => {
 
       (prisma.user.create as jest.Mock).mockResolvedValue(mockCreatedUser);
 
-      // Act
       const result = await createUser(mockReply as FastifyReply, mockUser as User);
 
-      // Assert
       expect(mockHashPassword).toHaveBeenCalledWith('password123');
       expect(prisma.user.create).toHaveBeenCalledWith({
         data: {
@@ -99,7 +90,6 @@ describe('Users Service', () => {
     });
 
     it('deve chamar handleError quando ocorrer um erro P2002 (email duplicado)', async () => {
-      // Arrange
       const mockUser: Partial<User> = {
         email: 'existing@example.com',
         password: 'password123',
@@ -112,10 +102,8 @@ describe('Users Service', () => {
 
       (prisma.user.create as jest.Mock).mockRejectedValue(prismaError);
 
-      // Act
       const result = await createUser(mockReply as FastifyReply, mockUser as User);
 
-      // Assert
       expect(mockHashPassword).toHaveBeenCalledWith('password123');
       expect(prisma.user.create).toHaveBeenCalled();
       expect(mockHandleError).toHaveBeenCalledWith(prismaError, mockReply);
@@ -123,11 +111,9 @@ describe('Users Service', () => {
     });
 
     it('deve chamar handleError quando ocorrer um erro P2012 (valor obrigatório faltando)', async () => {
-      // Arrange
       const mockUser: Partial<User> = {
         email: 'test@example.com',
         password: 'password123',
-        // Faltando campos obrigatórios
       };
 
       const prismaError = {
@@ -137,17 +123,14 @@ describe('Users Service', () => {
 
       (prisma.user.create as jest.Mock).mockRejectedValue(prismaError);
 
-      // Act
       const result = await createUser(mockReply as FastifyReply, mockUser as User);
 
-      // Assert
       expect(mockHashPassword).toHaveBeenCalled();
       expect(mockHandleError).toHaveBeenCalledWith(prismaError, mockReply);
       expect(result).toBeUndefined();
     });
 
     it('deve chamar handleError quando ocorrer um erro genérico', async () => {
-      // Arrange
       const mockUser: Partial<User> = {
         email: 'test@example.com',
         password: 'password123',
@@ -160,17 +143,14 @@ describe('Users Service', () => {
 
       (prisma.user.create as jest.Mock).mockRejectedValue(genericError);
 
-      // Act
       const result = await createUser(mockReply as FastifyReply, mockUser as User);
 
-      // Assert
       expect(mockHashPassword).toHaveBeenCalled();
       expect(mockHandleError).toHaveBeenCalledWith(genericError, mockReply);
       expect(result).toBeUndefined();
     });
 
     it('deve usar o hash e salt gerados pelo hashPassword', async () => {
-      // Arrange
       const mockUser: Partial<User> = {
         email: 'test@example.com',
         password: 'password123',
@@ -194,10 +174,8 @@ describe('Users Service', () => {
 
       (prisma.user.create as jest.Mock).mockResolvedValue(mockCreatedUser);
 
-      // Act
       await createUser(mockReply as FastifyReply, mockUser as User);
 
-      // Assert
       expect(prisma.user.create).toHaveBeenCalledWith({
         data: {
           ...mockUser,
@@ -218,7 +196,6 @@ describe('Users Service', () => {
 
   describe('getUser', () => {
     it('deve retornar um usuário quando encontrado', async () => {
-      // Arrange
       const email = 'test@example.com';
       const mockUser: Partial<User> = {
         id: 'user-id-123',
@@ -233,10 +210,8 @@ describe('Users Service', () => {
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser as User);
 
-      // Act
       const result = await getUser(mockReply as FastifyReply, email);
 
-      // Assert
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
         where: { email },
         select: {
@@ -255,15 +230,12 @@ describe('Users Service', () => {
     });
 
     it('deve retornar null quando o usuário não for encontrado', async () => {
-      // Arrange
       const email = 'notfound@example.com';
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-      // Act
       const result = await getUser(mockReply as FastifyReply, email);
 
-      // Assert
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
         where: { email },
         select: {
@@ -282,7 +254,6 @@ describe('Users Service', () => {
     });
 
     it('deve chamar handleError quando ocorrer um erro de conexão (P1001)', async () => {
-      // Arrange
       const email = 'test@example.com';
       const prismaError = {
         code: 'P1001',
@@ -291,17 +262,14 @@ describe('Users Service', () => {
 
       (prisma.user.findUnique as jest.Mock).mockRejectedValue(prismaError);
 
-      // Act
       const result = await getUser(mockReply as FastifyReply, email);
 
-      // Assert
       expect(prisma.user.findUnique).toHaveBeenCalled();
       expect(mockHandleError).toHaveBeenCalledWith(prismaError, mockReply);
       expect(result).toBeUndefined();
     });
 
     it('deve chamar handleError quando ocorrer um erro genérico', async () => {
-      // Arrange
       const email = 'test@example.com';
       const genericError = {
         code: 'UNKNOWN_ERROR',
@@ -310,10 +278,8 @@ describe('Users Service', () => {
 
       (prisma.user.findUnique as jest.Mock).mockRejectedValue(genericError);
 
-      // Act
       const result = await getUser(mockReply as FastifyReply, email);
 
-      // Assert
       expect(prisma.user.findUnique).toHaveBeenCalled();
       expect(mockHandleError).toHaveBeenCalledWith(genericError, mockReply);
       expect(result).toBeUndefined();
@@ -322,7 +288,6 @@ describe('Users Service', () => {
 
   describe('updateUser', () => {
     it('deve atualizar um usuário com sucesso', async () => {
-      // Arrange
       const email = 'test@example.com';
       const updateData: Partial<User> = {
         first_name: 'Jane',
@@ -340,10 +305,8 @@ describe('Users Service', () => {
 
       (prisma.user.update as jest.Mock).mockResolvedValue(mockUpdatedUser);
 
-      // Act
       const result = await updateUser(mockReply as FastifyReply, email, updateData);
 
-      // Assert
       expect(prisma.user.update).toHaveBeenCalledWith({
         where: { email },
         data: updateData,
@@ -360,7 +323,6 @@ describe('Users Service', () => {
     });
 
     it('deve chamar handleError quando o usuário não for encontrado (P2025)', async () => {
-      // Arrange
       const email = 'notfound@example.com';
       const updateData: Partial<User> = {
         first_name: 'Jane',
@@ -373,17 +335,14 @@ describe('Users Service', () => {
 
       (prisma.user.update as jest.Mock).mockRejectedValue(prismaError);
 
-      // Act
       const result = await updateUser(mockReply as FastifyReply, email, updateData);
 
-      // Assert
       expect(prisma.user.update).toHaveBeenCalled();
       expect(mockHandleError).toHaveBeenCalledWith(prismaError, mockReply);
       expect(result).toBeUndefined();
     });
 
     it('deve chamar handleError quando ocorrer um erro P2000 (valor muito longo)', async () => {
-      // Arrange
       const email = 'test@example.com';
       const updateData: Partial<User> = {
         first_name: 'A'.repeat(1000), // Valor muito longo
@@ -396,17 +355,14 @@ describe('Users Service', () => {
 
       (prisma.user.update as jest.Mock).mockRejectedValue(prismaError);
 
-      // Act
       const result = await updateUser(mockReply as FastifyReply, email, updateData);
 
-      // Assert
       expect(prisma.user.update).toHaveBeenCalled();
       expect(mockHandleError).toHaveBeenCalledWith(prismaError, mockReply);
       expect(result).toBeUndefined();
     });
 
     it('deve atualizar apenas os campos fornecidos', async () => {
-      // Arrange
       const email = 'test@example.com';
       const updateData: Partial<User> = {
         first_name: 'Updated Name',
@@ -422,10 +378,8 @@ describe('Users Service', () => {
 
       (prisma.user.update as jest.Mock).mockResolvedValue(mockUpdatedUser);
 
-      // Act
       await updateUser(mockReply as FastifyReply, email, updateData);
 
-      // Assert
       expect(prisma.user.update).toHaveBeenCalledWith({
         where: { email },
         data: updateData,
@@ -440,7 +394,6 @@ describe('Users Service', () => {
     });
 
     it('deve chamar handleError quando ocorrer um erro genérico', async () => {
-      // Arrange
       const email = 'test@example.com';
       const updateData: Partial<User> = {
         first_name: 'Jane',
@@ -453,10 +406,8 @@ describe('Users Service', () => {
 
       (prisma.user.update as jest.Mock).mockRejectedValue(genericError);
 
-      // Act
       const result = await updateUser(mockReply as FastifyReply, email, updateData);
 
-      // Assert
       expect(prisma.user.update).toHaveBeenCalled();
       expect(mockHandleError).toHaveBeenCalledWith(genericError, mockReply);
       expect(result).toBeUndefined();
@@ -465,15 +416,12 @@ describe('Users Service', () => {
 
   describe('deleteUser', () => {
     it('deve deletar um usuário com sucesso', async () => {
-      // Arrange
       const email = 'test@example.com';
 
       (prisma.user.delete as jest.Mock).mockResolvedValue({} as User);
 
-      // Act
       await deleteUser(mockReply as FastifyReply, email);
 
-      // Assert
       expect(prisma.user.delete).toHaveBeenCalledWith({
         where: { email },
       });
@@ -481,7 +429,6 @@ describe('Users Service', () => {
     });
 
     it('deve chamar handleError e lançar erro quando o usuário não for encontrado (P2025)', async () => {
-      // Arrange
       const email = 'notfound@example.com';
       const prismaError = {
         code: 'P2025',
@@ -490,7 +437,6 @@ describe('Users Service', () => {
 
       (prisma.user.delete as jest.Mock).mockRejectedValue(prismaError);
 
-      // Act & Assert
       await expect(deleteUser(mockReply as FastifyReply, email)).rejects.toThrow(
         'Erro ao deletar usuário'
       );
@@ -502,7 +448,6 @@ describe('Users Service', () => {
     });
 
     it('deve chamar handleError e lançar erro quando ocorrer um erro de conexão (P1001)', async () => {
-      // Arrange
       const email = 'test@example.com';
       const prismaError = {
         code: 'P1001',
@@ -511,7 +456,6 @@ describe('Users Service', () => {
 
       (prisma.user.delete as jest.Mock).mockRejectedValue(prismaError);
 
-      // Act & Assert
       await expect(deleteUser(mockReply as FastifyReply, email)).rejects.toThrow(
         'Erro ao deletar usuário'
       );
@@ -521,7 +465,6 @@ describe('Users Service', () => {
     });
 
     it('deve chamar handleError e lançar erro quando ocorrer um erro genérico', async () => {
-      // Arrange
       const email = 'test@example.com';
       const genericError = {
         code: 'UNKNOWN_ERROR',
@@ -530,7 +473,6 @@ describe('Users Service', () => {
 
       (prisma.user.delete as jest.Mock).mockRejectedValue(genericError);
 
-      // Act & Assert
       await expect(deleteUser(mockReply as FastifyReply, email)).rejects.toThrow(
         'Erro ao deletar usuário'
       );
@@ -540,7 +482,6 @@ describe('Users Service', () => {
     });
 
     it('deve sempre lançar erro após chamar handleError', async () => {
-      // Arrange
       const email = 'test@example.com';
       const prismaError = {
         code: 'P2003',
@@ -549,7 +490,6 @@ describe('Users Service', () => {
 
       (prisma.user.delete as jest.Mock).mockRejectedValue(prismaError);
 
-      // Act & Assert
       await expect(deleteUser(mockReply as FastifyReply, email)).rejects.toThrow(
         'Erro ao deletar usuário'
       );
