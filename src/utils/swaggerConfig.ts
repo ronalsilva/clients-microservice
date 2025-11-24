@@ -10,7 +10,7 @@ export const swaggerOptions: FastifyDynamicSwaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:3002',
+                url: process.env.SWAGGER_SERVER_URL || 'http://localhost:3002',
                 description: 'Development server'
             }
         ],

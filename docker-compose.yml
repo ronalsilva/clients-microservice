@@ -7,3 +7,39 @@ services:
       POSTGRES_DB: clients-db-ilia
     ports:
       - 5431:5432
+    networks:
+      - clients-network
+      - wallet-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  clients-microservice:
+    build: .
+    container_name: clients-microservice
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 3002:3002
+    restart: unless-stopped
+    networks:
+      - clients-network
+      - wallet-network
+    environment:
+      DATABASE_URL: postgres://postgres:admin@db:5432/clients-db-ilia
+      PORT: 3002
+      JWT_SECRET: ILIACHALLENGE_INTERNAL
+      SWAGGER_SERVER_URL: http://localhost:3002
+      KAFKA_BROKER: kafka:29092
+      KAFKA_REQUEST_TOPIC: client-microservice-requests
+      KAFKA_RESPONSE_TOPIC: client-microservice-responses
+
+networks:
+  clients-network:
+    driver: bridge
+  wallet-network:
+    name: waller-microservice_wallet-network
+    external: true
