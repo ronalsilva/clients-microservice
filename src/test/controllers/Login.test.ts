@@ -88,7 +88,8 @@ describe('Login Controller', () => {
       expect(mockVerifyPassword).not.toHaveBeenCalled();
       expect(mockReply.code).toHaveBeenCalledWith(401);
       expect(mockReply.send).toHaveBeenCalledWith({
-        error: 'User not found',
+        error: 'UNAUTHORIZED',
+        message: 'User not found',
       });
       expect(mockJwt.sign).not.toHaveBeenCalled();
     });
@@ -105,7 +106,8 @@ describe('Login Controller', () => {
       expect(mockVerifyPassword).not.toHaveBeenCalled();
       expect(mockReply.code).toHaveBeenCalledWith(401);
       expect(mockReply.send).toHaveBeenCalledWith({
-        error: 'User not found',
+        error: 'UNAUTHORIZED',
+        message: 'User not found',
       });
     });
   });
@@ -137,7 +139,7 @@ describe('Login Controller', () => {
       expect(mockReply.code).toHaveBeenCalledWith(401);
       expect(mockReply.send).toHaveBeenCalledWith({
         error: 'UNAUTHORIZED',
-        message: 'Email ou senha incorretos',
+        message: 'Email or password incorrect',
       });
       expect(mockJwt.sign).not.toHaveBeenCalled();
     });
