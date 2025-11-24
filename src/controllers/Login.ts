@@ -7,7 +7,7 @@ export async function loginController(request: FastifyRequest<{ Body: { email: s
     const { email: userEmail, password } = request.body;
     const user = await getUser(response, userEmail);
     if (!user) {
-        return response.code(401).send({ error: "User not found" });
+        return response.code(401).send({ error: "UNAUTHORIZED", message: "User not found" });
     }
 
     const userData = await getUser(response, userEmail) as User;
@@ -17,7 +17,7 @@ export async function loginController(request: FastifyRequest<{ Body: { email: s
         salt: userData.salt as string,
         hash: userData.password as string,
     })) {
-        return response.code(401).send({ error: "UNAUTHORIZED", message: "Email ou senha incorretos" });
+        return response.code(401).send({ error: "UNAUTHORIZED", message: "Email or password incorrect" });
     }
 
     const {

@@ -1,54 +1,54 @@
 # Clients Microservice - Ilia Wallet
 
-Microservico de gerenciamento de clientes desenvolvido para a plataforma conecta com o servico de Wallet. API RESTful construida com Fastify, TypeScript e Prisma, oferecendo operacoes CRUD completas para usuarios e autenticacao via JWT.
+Client management microservice developed for the platform that connects with the Wallet service. RESTful API built with Fastify, TypeScript and Prisma, offering complete CRUD operations for users and authentication via JWT.
 
-## Tecnologias
+## Technologies
 
 - **Runtime**: Node.js
 - **Framework**: Fastify
-- **Linguagem**: TypeScript
-- **Mensageria**: Kafka (KafkaJS)
+- **Language**: TypeScript
+- **Messaging**: Kafka (KafkaJS)
 - **ORM**: Prisma
-- **Banco de Dados**: PostgreSQL
-- **Autenticacao**: JWT (JSON Web Tokens)
-- **Documentacao**: Swagger/OpenAPI
-- **Testes**: Jest
-- **Containerização**: Docker
+- **Database**: PostgreSQL
+- **Authentication**: JWT (JSON Web Tokens)
+- **Documentation**: Swagger/OpenAPI
+- **Testing**: Jest
+- **Containerization**: Docker
 
-## Funcionalidades
+## Features
 
-- ✅ CRUD completo de usuarios
-- ✅ Autenticacao e autorizacao via JWT
-- ✅ Documentacao interativa com Swagger UI
-- ✅ Validacao de schemas com Fastify
-- ✅ CORS configurado
-- ✅ Estrutura modular e escalavel
-- ✅ Testes automatizados com cobertura
+- ✅ Complete user CRUD
+- ✅ Authentication and authorization via JWT
+- ✅ Interactive documentation with Swagger UI
+- ✅ Schema validation with Fastify
+- ✅ CORS configured
+- ✅ Modular and scalable structure
+- ✅ Automated tests with coverage
 
-## Pre-requisitos
+## Prerequisites
 
-Antes de comecar, certifique-se de ter instalado:
+Before starting, make sure you have installed:
 
-- [Node.js](https://nodejs.org/) (versao 18 ou superior)
-- [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
-- [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/)
-- [Prisma CLI](https://www.prisma.io/docs/concepts/components/prisma-cli) (instalado via npm)
+- [Node.js](https://nodejs.org/) (version 18 or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
+- [Prisma CLI](https://www.prisma.io/docs/concepts/components/prisma-cli) (installed via npm)
 
-## Instalacao
+## Installation
 
-1. **Clone o repositorio** (se ainda nao tiver feito):
+1. **Clone the repository** (if you haven't already):
 ```bash
 git clone <repository-url>
 cd clients-microservice
 ```
 
-2. **Instale as dependencias**:
+2. **Install dependencies**:
 ```bash
 npm install
 ```
 
-3. **Configure as variaveis de ambiente**:
-Crie um arquivo `.env` na raiz do projeto com as seguintes variaveis:
+3. **Configure environment variables**:
+Create a `.env` file in the project root with the following variables:
 
 ```env
 DATABASE_URL="postgresql://postgres:admin@localhost:5431/clients-db-ilia"
@@ -59,42 +59,42 @@ KAFKA_REQUEST_TOPIC=client-microservice-requests
 KAFKA_RESPONSE_TOPIC=client-microservice-responses
 ```
 
-## Integração com Kafka
+## Kafka Integration
 
-O client-microservice se comunica com outros servicos via Kafka usando os topicos:
+The client-microservice communicates with other services via Kafka using the following topics:
 
-- Consumo: `client-microservice-requests`
-- Publicacao: `client-microservice-responses`
+- Consumption: `client-microservice-requests`
+- Publication: `client-microservice-responses`
 
-### Acoes suportadas
-- `validateTokenAndGetUser`: valida o token JWT e retorna os dados do usuario do token.
-- `getUserById`: busca o usuario pelo `userId` informado (token opcional).
+### Supported Actions
+- `validateTokenAndGetUser`: validates the JWT token and returns the user data from the token.
+- `getUserById`: searches for the user by the provided `userId` (token optional).
 
-### Formato das mensagens
+### Message Format
 
-Requisicao (validateTokenAndGetUser):
+Request (validateTokenAndGetUser):
 ```json
 {
-  "correlationId": "uuid-da-requisicao",
+  "correlationId": "request-uuid",
   "action": "validateTokenAndGetUser",
   "token": "jwt-token"
 }
 ```
 
-Requisicao (getUserById):
+Request (getUserById):
 ```json
 {
-  "correlationId": "uuid-da-requisicao",
+  "correlationId": "request-uuid",
   "action": "getUserById",
   "userId": "user-id",
-  "token": "jwt-token (opcional)"
+  "token": "jwt-token (optional)"
 }
 ```
 
-Resposta de sucesso:
+Success response:
 ```json
 {
-  "correlationId": "uuid-da-requisicao",
+  "correlationId": "request-uuid",
   "user": {
     "id": "user-id",
     "email": "user@example.com",
@@ -103,124 +103,124 @@ Resposta de sucesso:
 }
 ```
 
-Resposta de erro:
+Error response:
 ```json
 {
-  "correlationId": "uuid-da-requisicao",
+  "correlationId": "request-uuid",
   "error": "Invalid token",
   "message": "Token expired or invalid"
 }
 ```
 
-4. **Inicie o banco de dados com Docker**:
+4. **Start the database with Docker**:
 
-Docker composer ja esta configurado.
+Docker Compose is already configured.
 
 ```bash
 docker-compose up -d
 ```
 
-5. **Configure o banco de dados com Prisma**:
+5. **Configure the database with Prisma**:
 ```bash
 npx prisma db push
 npx prisma generate
 ```
 
-Ou use o script npm:
+Or use the npm script:
 ```bash
 npm run db
 ```
 
-## Executando o Projeto
+## Running the Project
 
-### Modo Desenvolvimento
+### Development Mode
 ```bash
 npm run dev
 ```
 
-Ou:
+Or:
 F5
 
-O servidor estará disponível em `http://localhost:3002`
+The server will be available at `http://localhost:3002`
 
-### Modo Produção
+### Production Mode
 ```bash
 npm run build
 npm run start
 ```
 
-## Documentacao da API
+## API Documentation
 
-Apos iniciar o servidor, acesse a documentacao no Swagger:
+After starting the server, access the documentation in Swagger:
 
 **http://localhost:3002/docs**
 
-A documentacao inclui:
-- Todos os endpoints disponiveis
-- Schemas de requisicao e resposta
-- Exemplos de uso
-- Autenticacao JWT
+The documentation includes:
+- All available endpoints
+- Request and response schemas
+- Usage examples
+- JWT authentication
 
-## Testes
+## Testing
 
-Execute os testes com cobertura:
+Run tests with coverage:
 ```bash
 npm run test
 ```
 ### CI/CD
 
-O projeto esta configurado com **GitHub Actions** para executar os testes unitarios automaticamente em cada push e pull request. O workflow roda os testes com cobertura e garante que o codigo esteja funcionando corretamente antes de ser mesclado.
+The project is configured with **GitHub Actions** to automatically run unit tests on each push and pull request. The workflow runs tests with coverage and ensures the code is working correctly before being merged.
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
 clients-microservice/
 ├── src/
-│   ├── api/              # Definicao das rotas
-│   ├── controllers/      # Logica de controle
+│   ├── api/              # Route definitions
+│   ├── controllers/      # Control logic
 │   ├── middleware/       
-│   │   └── Kafka         # Configuracao do Kafka
-│   ├── schemas/          # Schemas de validacao
-│   ├── service/          # Logica de negocio
-│   ├── utils/            # Utilitarios
-│   ├── test/             # Testes
-│   ├── app.ts            # Ponto de entrada
-│   └── server.ts         # Configuracao do servidor
+│   │   └── Kafka         # Kafka configuration
+│   ├── schemas/          # Validation schemas
+│   ├── service/          # Business logic
+│   ├── utils/            # Utilities
+│   ├── test/             # Tests
+│   ├── app.ts            # Entry point
+│   └── server.ts         # Server configuration
 ├── prisma/
-│   └── schema.prisma     # Schema do banco de dados
-├── docker-compose.yml    # Configuracao Docker
-├── jest.config.js        # Configuracao Jest
-├── tsconfig.json         # Configuracao TypeScript
-└── package.json          # Dependencias do projeto
+│   └── schema.prisma     # Database schema
+├── docker-compose.yml    # Docker configuration
+├── jest.config.js        # Jest configuration
+├── tsconfig.json         # TypeScript configuration
+└── package.json          # Project dependencies
 ```
 
 ## Docker
 
-### Iniciar apenas o banco de dados
+### Start database only
 ```bash
 docker-compose up -d
 ```
 
-## Seguranca
+## Security
 
-- Senhas sao hasheadas antes de serem armazenadas
-- Autenticacao baseada em JWT
-- Validacao de schemas em todas as rotas
-- CORS configurado para controle de acesso
+- Passwords are hashed before being stored
+- JWT-based authentication
+- Schema validation on all routes
+- CORS configured for access control
 
-## Scripts Disponiveis
+## Available Scripts
 
-- `npm run dev` - Inicia o servidor em modo desenvolvimento
-- `npm start` - Inicia o servidor em modo produção
-- `npm run build` - Compila o TypeScript
-- `npm test` - Executa os testes
-- `npm run db` - Executa migrations e gera Prisma Client
-- `npm run docker` - Inicia o Docker Compose
+- `npm run dev` - Starts the server in development mode
+- `npm start` - Starts the server in production mode
+- `npm run build` - Compiles TypeScript
+- `npm test` - Runs tests
+- `npm run db` - Runs migrations and generates Prisma Client
+- `npm run docker` - Starts Docker Compose
 
-## 👤 Autor
+## 👤 Author
 
 **Ronald Junger**
 
 ---
 
-**Desenvolvido com ❤️**
+**Developed with ❤️**
