@@ -3,6 +3,7 @@ import { getUser } from '@service/Users';
 import { verifyPassword } from '@utils/hash';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { User } from '@prisma/client';
+import { JWT } from '@fastify/jwt';
 
 
 jest.mock('@service/Users');
@@ -23,13 +24,13 @@ describe('Login Controller', () => {
       sign: jest.fn().mockReturnValue('mock-access-token'),
     };
 
-    mockRequest = {
-      body: {
+    mockRequest = { 
+        body: {
         email: 'test@example.com',
         password: 'password123',
       },
-      jwt: mockJwt as any,
-    };
+      jwt: mockJwt as unknown as JWT,
+    } as unknown as FastifyRequest<{ Body: { email: string; password: string } }>;
 
     mockReply = {
       code: jest.fn().mockReturnThis(),
@@ -95,7 +96,7 @@ describe('Login Controller', () => {
     });
 
     it('deve retornar erro 401 quando o usuário for null', async () => {
-      mockGetUser.mockResolvedValue(null as any);
+      mockGetUser.mockResolvedValue(null as unknown as User);
 
       await loginController(
         mockRequest as FastifyRequest<{ Body: { email: string; password: string } }>,

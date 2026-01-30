@@ -5,12 +5,10 @@ import { FastifyRequest, FastifyReply } from "fastify";
 
 export async function loginController(request: FastifyRequest<{ Body: { email: string; password: string } }>, response: FastifyReply): Promise<FastifyReply> {
     const { email: userEmail, password } = request.body;
-    const user = await getUser(response, userEmail);
-    if (!user) {
+    const userData = await getUser(response, userEmail) as User;
+    if (!userData) {
         return response.code(401).send({ error: "UNAUTHORIZED", message: "User not found" });
     }
-
-    const userData = await getUser(response, userEmail) as User;
 
     if (!verifyPassword({
         candidatePassword: password,

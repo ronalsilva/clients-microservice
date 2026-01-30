@@ -35,10 +35,10 @@ interface KafkaErrorResponse {
     message: string;
 }
 
-function verifyAndDecodeJWTToken(token: string): { valid: boolean; decoded?: any } {
+function verifyAndDecodeJWTToken(token: string): { valid: boolean; decoded?: jwt.JwtPayload } {
     try {
         const secret = process.env.JWT_SECRET || '';
-        const decoded = jwt.verify(token, secret);
+        const decoded = jwt.verify(token, secret) as jwt.JwtPayload;
         return { valid: true, decoded };
     } catch (error) {
         return { valid: false };
@@ -166,13 +166,13 @@ export async function handleGetUserRequest(payload: EachMessagePayload): Promise
 
         const responseTopic = process.env.KAFKA_RESPONSE_TOPIC || 'client-microservice-responses';
         await sendKafkaMessage(responseTopic, successResponse, correlationId);
-    } catch (error: any) {
+    } catch (error: unknown) {
         if (correlationId) {
             try {
                 const errorResponse: KafkaErrorResponse = {
                     correlationId,
                     error: 'Internal server error',
-                    message: error.message || 'An unexpected error occurred',
+                    message: (error as Error).message || 'An unexpected error occurred',
                 };
 
                 const responseTopic = process.env.KAFKA_RESPONSE_TOPIC || 'client-microservice-responses';

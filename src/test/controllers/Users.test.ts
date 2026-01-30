@@ -58,7 +58,7 @@ describe('Users Controller', () => {
       };
 
       mockRequest.body = mockUserData;
-      mockCreateUser.mockResolvedValue(mockCreatedUser as any);
+      mockCreateUser.mockResolvedValue(mockCreatedUser as unknown as User);
 
       await createUserController(
         mockRequest as FastifyRequest<{ Body: User }>,
@@ -107,7 +107,7 @@ describe('Users Controller', () => {
       };
 
       mockRequest.body = mockUserData;
-      mockCreateUser.mockResolvedValue(mockCreatedUser as any);
+      mockCreateUser.mockResolvedValue(mockCreatedUser as unknown as User);
 
       await createUserController(
         mockRequest as FastifyRequest<{ Body: User }>,
@@ -206,7 +206,7 @@ describe('Users Controller', () => {
 
       mockJwtVerify.mockResolvedValue({ email: 'test@example.com' });
       mockGetUser.mockResolvedValue(existingUser as User);
-      mockUpdateUser.mockResolvedValue(updatedUser as any);
+      mockUpdateUser.mockResolvedValue(updatedUser as unknown as User);
       mockRequest.body = updateData;
 
       await updateUserController(
@@ -244,7 +244,7 @@ describe('Users Controller', () => {
 
     it('deve retornar erro 404 quando o usuário for null', async () => {
       mockJwtVerify.mockResolvedValue({ email: 'test@example.com' });
-      mockGetUser.mockResolvedValue(null as any);
+      mockGetUser.mockResolvedValue(null as unknown as User);
       mockRequest.body = { first_name: 'Jane' };
 
       await updateUserController(
@@ -299,7 +299,7 @@ describe('Users Controller', () => {
 
       mockJwtVerify.mockResolvedValue({ email: 'test@example.com' });
       mockGetUser.mockResolvedValue(existingUser as User);
-      mockUpdateUser.mockResolvedValue(updatedUser as any);
+      mockUpdateUser.mockResolvedValue(updatedUser as unknown as User);
       mockRequest.body = updateData;
 
       await updateUserController(
@@ -359,7 +359,7 @@ describe('Users Controller', () => {
 
     it('deve retornar erro 404 quando o usuário for null', async () => {
       mockJwtVerify.mockResolvedValue({ email: 'test@example.com' });
-      mockGetUser.mockResolvedValue(null as any);
+      mockGetUser.mockResolvedValue(null as unknown as User);
 
       await deleteUserController(
         mockRequest as FastifyRequest,

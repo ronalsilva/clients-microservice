@@ -1,6 +1,6 @@
 import { producer } from './config';
 
-export async function sendKafkaMessage(topic: string, message: any, correlationId?: string): Promise<void> {
+export async function sendKafkaMessage(topic: string, message: unknown, correlationId?: string): Promise<void> {
     try {
         await producer.send({
             topic,

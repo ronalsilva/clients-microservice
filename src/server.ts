@@ -7,6 +7,7 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import {swaggerOptions} from "@utils/swaggerConfig"
 import fjwt, { JWT } from "@fastify/jwt";
+import { GetterSetter } from "fastify/types/instance";
 
 env.config();
 
@@ -15,7 +16,7 @@ declare module "fastify" {
         jwt: JWT;
     }
 	export interface FastifyInstance {
-		authenticate: any;
+		authenticate: () => Promise<void>;
 	}
 }
 
@@ -55,13 +56,13 @@ export default function buildServer(): FastifyInstance {
 		req.jwt = server.jwt as JWT;
 		next();
 	});
-    server.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply) => {
+    server.decorate("authenticate", async function(this: FastifyInstance, request: FastifyRequest<{ Headers: { authorization?: string } }>, reply: FastifyReply): Promise<void> {
         try {
-            await request.jwtVerify();
+            await (this as FastifyInstance).jwt.verify(request.headers.authorization ?? '', { ignoreExpiration: true });
         } catch (error) {
             reply.code(401).send({ error: "Unauthorized", message: "Invalid or expired token" });
         }
-    });
+    } as unknown as GetterSetter<FastifyInstance, (this: FastifyInstance) => Promise<void>>);
 
     const apiPath = path.join(__dirname, "api");
 	const apis = fs.readdirSync(apiPath);
