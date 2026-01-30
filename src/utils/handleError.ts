@@ -1,11 +1,12 @@
 import { FastifyReply } from "fastify";
+import { Prisma } from "@prisma/client";
 
 // ESSE COMENTARIO NAO FOI GERADO POR IA :) HAHA - FOI GERADO POR MIM RONALD 
 // FUNCAO CRIADA PARA MANIPULAR ERROS GERADOS PELO PRISMA
 // DOC PRISMA: https://www.prisma.io/docs/orm/reference/error-reference
-function handleError(err: any, response: FastifyReply): void {
+function handleError(err: unknown, response: FastifyReply): void {
     console.error("Database error:", err);
-    switch (err.code) {
+    switch ((err as Prisma.PrismaClientKnownRequestError).code) {
         case "P1000":
             response.code(500).send({
                 error: 500,
@@ -46,7 +47,7 @@ function handleError(err: any, response: FastifyReply): void {
         case "P2003":
             response.code(400).send({
                 error: 400,
-                message: `Erro ao criar usuário: ${err.meta?.field_name}`
+                message: `Erro ao criar usuário: ${(err as Prisma.PrismaClientKnownRequestError).meta?.field_name}`
             });
             break;
         case "P2025":
