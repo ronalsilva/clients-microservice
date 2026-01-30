@@ -7,19 +7,22 @@ const PORT = Number(process.env.PORT) || 3002;
 
 async function startServer(server: FastifyInstance): Promise<void> {
     try {
-        // Conectar Kafka Producer e Consumer
-        await connectProducer();
-        await connectConsumer();
+        try {
+            await connectProducer();
+            await connectConsumer();
+        } catch (kafkaError) {
+            console.warn('Kafka connection failed, continuing without Kafka:', kafkaError);
+        }
 
         await server.listen({ port: PORT, host: '0.0.0.0' });
         console.log(`Server ready at http://localhost:${PORT}`);
+        console.log(`Swagger docs available at http://localhost:${PORT}/docs`);
     } catch (error: any) {
         if (error?.code === 'EADDRINUSE') {
             console.error(`Port ${PORT} is already in use.`);
         } else {
             console.error("Error starting server:", error);
         }
-        // Desconectar Kafka em caso de erro
         await disconnectProducer().catch(console.error);
         await disconnectConsumer().catch(console.error);
         process.exit(1);
@@ -30,7 +33,6 @@ async function main() {
     const server = buildServer();
     await startServer(server);
 
-    // Graceful shutdown
     const shutdown = async () => {
         console.log('Shutting down gracefully...');
         await server.close();

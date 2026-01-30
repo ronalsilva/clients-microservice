@@ -80,7 +80,7 @@ export async function deleteUser(response: FastifyReply, email: string): Promise
         await prisma.user.delete({ where: { email } });
     } catch (err: any) {
         handleError(err, response);
-        throw new Error("Erro ao deletar usuário");
+        throw new Error("Error deleting user");
     }
 }
 
@@ -100,6 +100,6 @@ export async function getUserById(userId: string): Promise<CreateUserResult | nu
         return result as CreateUserResult | null;
     } catch (err: any) {
         console.error('Error getting user by ID:', err);
-        throw new Error("Erro ao buscar usuário por ID");
+        throw new Error("Error getting user by ID");
     }
 }

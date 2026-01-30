@@ -239,7 +239,7 @@ describe('Users Controller', () => {
       expect(mockGetUser).toHaveBeenCalledWith(mockReply, 'test@example.com');
       expect(mockUpdateUser).not.toHaveBeenCalled();
       expect(mockReply.code).toHaveBeenCalledWith(404);
-      expect(mockReply.send).toHaveBeenCalledWith({ error: 'User not found' });
+      expect(mockReply.send).toHaveBeenCalledWith({ error: 'NOT_FOUND', message: 'User not found' });
     });
 
     it('deve retornar erro 404 quando o usuário for null', async () => {
@@ -256,7 +256,7 @@ describe('Users Controller', () => {
       expect(mockGetUser).toHaveBeenCalledWith(mockReply, 'test@example.com');
       expect(mockUpdateUser).not.toHaveBeenCalled();
       expect(mockReply.code).toHaveBeenCalledWith(404);
-      expect(mockReply.send).toHaveBeenCalledWith({ error: 'User not found' });
+      expect(mockReply.send).toHaveBeenCalledWith({ error: 'NOT_FOUND', message: 'User not found' });
     });
 
     it('deve lançar erro quando o JWT for inválido', async () => {
@@ -354,7 +354,7 @@ describe('Users Controller', () => {
       expect(mockGetUser).toHaveBeenCalledWith(mockReply, 'test@example.com');
       expect(mockDeleteUser).not.toHaveBeenCalled();
       expect(mockReply.code).toHaveBeenCalledWith(404);
-      expect(mockReply.send).toHaveBeenCalledWith({ error: 'User not found' });
+      expect(mockReply.send).toHaveBeenCalledWith({ error: 'NOT_FOUND', message: 'User not found' });
     });
 
     it('deve retornar erro 404 quando o usuário for null', async () => {
@@ -370,7 +370,7 @@ describe('Users Controller', () => {
       expect(mockGetUser).toHaveBeenCalledWith(mockReply, 'test@example.com');
       expect(mockDeleteUser).not.toHaveBeenCalled();
       expect(mockReply.code).toHaveBeenCalledWith(404);
-      expect(mockReply.send).toHaveBeenCalledWith({ error: 'User not found' });
+      expect(mockReply.send).toHaveBeenCalledWith({ error: 'NOT_FOUND', message: 'User not found' });
     });
 
     it('deve lançar erro quando o JWT for inválido', async () => {

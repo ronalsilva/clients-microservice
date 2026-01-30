@@ -8,7 +8,9 @@
 		"test": "jest --coverage --forceExit --detectOpenHandles --maxWorkers=10",
 		"start": "ts-node -r tsconfig-paths/register src/app.ts",
 		"build": "tsc --skipLibCheck",
-		"db": "npx prisma db push & npx prisma generate",
+		"db": "npx prisma db push && npx prisma generate",
+		"db:generate": "npx prisma generate",
+		"db:push": "npx prisma db push",
 		"docker": "docker-compose up -d"
 	},
 	"dependencies": {

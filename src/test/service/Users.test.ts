@@ -438,7 +438,7 @@ describe('Users Service', () => {
       (prisma.user.delete as jest.Mock).mockRejectedValue(prismaError);
 
       await expect(deleteUser(mockReply as FastifyReply, email)).rejects.toThrow(
-        'Erro ao deletar usuário'
+        'Error deleting user'
       );
 
       expect(prisma.user.delete).toHaveBeenCalledWith({
@@ -457,7 +457,7 @@ describe('Users Service', () => {
       (prisma.user.delete as jest.Mock).mockRejectedValue(prismaError);
 
       await expect(deleteUser(mockReply as FastifyReply, email)).rejects.toThrow(
-        'Erro ao deletar usuário'
+        'Error deleting user'
       );
 
       expect(prisma.user.delete).toHaveBeenCalled();
@@ -474,7 +474,7 @@ describe('Users Service', () => {
       (prisma.user.delete as jest.Mock).mockRejectedValue(genericError);
 
       await expect(deleteUser(mockReply as FastifyReply, email)).rejects.toThrow(
-        'Erro ao deletar usuário'
+        'Error deleting user'
       );
 
       expect(prisma.user.delete).toHaveBeenCalled();
@@ -491,7 +491,7 @@ describe('Users Service', () => {
       (prisma.user.delete as jest.Mock).mockRejectedValue(prismaError);
 
       await expect(deleteUser(mockReply as FastifyReply, email)).rejects.toThrow(
-        'Erro ao deletar usuário'
+        'Error deleting user'
       );
 
       expect(mockHandleError).toHaveBeenCalled();
